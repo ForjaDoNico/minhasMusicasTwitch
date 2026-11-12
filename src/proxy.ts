@@ -15,6 +15,17 @@ export async function proxy(request: NextRequest) {
     }
   }
 
+  // Se o Supabase não reconhecer o redirectTo (lista de Redirect URLs), ele volta para a Site URL com
+  // ?code=… em vez de /auth/callback. Encaminha para o callback para concluir o login mesmo assim.
+  const { pathname, searchParams } = request.nextUrl;
+  const code = searchParams.get("code");
+  if (code && !pathname.startsWith("/api/") && !pathname.startsWith("/auth/")) {
+    const target = new URL("/auth/callback", request.nextUrl);
+    target.searchParams.set("code", code);
+    target.searchParams.set("next", pathname === "/" ? "/dashboard" : pathname);
+    return NextResponse.redirect(target);
+  }
+
   let response = NextResponse.next({ request });
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
