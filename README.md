@@ -74,7 +74,16 @@ Os testes e2e precisam do Supabase local rodando e de `NEXT_PUBLIC_ENABLE_DEV_LO
 ### 1. Supabase
 
 1. Crie um projeto em https://supabase.com.
-2. `pnpm supabase link --project-ref <ref>` e `pnpm supabase db push` (aplica `supabase/migrations`; **não** rode o `seed.sql` em produção — ele cria usuários com senha fixa).
+2. Aplique as migrations no projeto da nuvem (o `<ref>` é o Project ID, visível na URL do painel e em `https://<ref>.supabase.co`):
+   ```bash
+   pnpm supabase login
+   pnpm supabase link --project-ref <ref>
+   pnpm supabase db push --remote          # pede a senha do banco (ou use -p '...')
+   pnpm supabase migration list --remote   # confira: a migration deve aparecer nas colunas local e remote
+   ```
+   > ⚠️ Nesta versão da CLI os comandos `db`/`migration` apontam para o banco **local** por padrão — sem `--remote` o push "dá certo" mas não muda nada na nuvem.
+   >
+   > **Não** rode o `seed.sql` em produção — ele cria usuários com senha fixa.
 3. **Authentication → Providers → Twitch**: habilite com o Client ID/Secret do app da Twitch.
 4. **Authentication → URL Configuration**: Site URL = `https://seu-app.vercel.app`; Redirect URLs: `https://seu-app.vercel.app/auth/callback`.
 

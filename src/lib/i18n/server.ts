@@ -1,12 +1,11 @@
 import "server-only";
-import { cookies, headers } from "next/headers";
+import { cookies } from "next/headers";
 import { DEFAULT_LOCALE, dictionaries, isLocale, translate, type Locale, type MessageKey } from "./dictionaries";
 
+// Português é o padrão para todos; inglês só quando o usuário escolhe no seletor (cookie).
 export async function getLocale(): Promise<Locale> {
   const c = (await cookies()).get("locale")?.value;
-  if (isLocale(c)) return c;
-  const accept = (await headers()).get("accept-language") ?? "";
-  return /^en\b/i.test(accept) ? "en" : DEFAULT_LOCALE;
+  return isLocale(c) ? c : DEFAULT_LOCALE;
 }
 
 export async function getT() {
