@@ -8,7 +8,6 @@ export type PlayHistory = T["play_history"]["Row"];
 export type BotCommandRow = T["bot_commands"]["Row"];
 export type LearningRequest = T["learning_requests"]["Row"];
 export type Profile = T["profiles"]["Row"];
-export type Tip = T["tips"]["Row"];
 
 export type QueueSong = Pick<Song, "id" | "title" | "artist" | "tags" | "is_premium">;
 export type QueueEntry = QueueItem & { song: QueueSong | null };
@@ -21,13 +20,6 @@ export interface ChannelSettings {
   vipsOnly: boolean;
   allowSiteRequests: boolean;
   allowAnonymous: boolean;
-  tipPriority: boolean;
-  minTipForPriority: number;
-  premiumMinTip: number;
-  currency: string;
-  pixKey: string;
-  pixName: string;
-  pixCity: string;
   botLanguage: "en" | "pt";
 }
 
@@ -39,13 +31,6 @@ export const DEFAULT_SETTINGS: ChannelSettings = {
   vipsOnly: false,
   allowSiteRequests: true,
   allowAnonymous: true,
-  tipPriority: true,
-  minTipForPriority: 5,
-  premiumMinTip: 10,
-  currency: "BRL",
-  pixKey: "",
-  pixName: "",
-  pixCity: "",
   botLanguage: "en",
 };
 
@@ -67,8 +52,6 @@ export interface ChannelStats {
   live: boolean;
   played_session: number;
   requests_session: number;
-  tips_session_amount: number;
-  tips_session_donors: number;
   requests_total: number;
   songs: number;
   saved: number;

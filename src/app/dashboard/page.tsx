@@ -3,7 +3,6 @@ import Link from "next/link";
 import { getViewer } from "@/lib/auth";
 import { getT } from "@/lib/i18n/server";
 import { supabaseServer } from "@/lib/supabase/server";
-import { supabaseAdmin } from "@/lib/supabase/admin";
 import { APP_URL, serverEnv } from "@/lib/env";
 import { LoginButton } from "@/components/login-button";
 import { Button, Card } from "@/components/ui";
@@ -51,14 +50,12 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
     );
   }
 
-  const [{ data: stats }, { data: moderators }, { data: tips }, { data: session }, { data: secret }] = await Promise.all([
+  const [{ data: stats }, { data: moderators }, { data: session }] = await Promise.all([
     supabase.rpc("channel_stats", { p_channel_id: channel.id }),
     supabase.from("moderators").select("*").eq("channel_id", channel.id).order("twitch_login"),
-    supabase.from("tips").select("*").eq("channel_id", channel.id).order("created_at", { ascending: false }).limit(10),
     channel.current_session_id
       ? supabase.from("stream_sessions").select("*").eq("id", channel.current_session_id).maybeSingle()
       : Promise.resolve({ data: null }),
-    supabaseAdmin().from("channel_secrets").select("tip_webhook_token, streamelements_channel_id, streamelements_jwt").eq("channel_id", channel.id).maybeSingle(),
   ]);
 
   return (
@@ -70,11 +67,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
         channel={channel}
         stats={stats as never}
         moderators={moderators ?? []}
-        tips={tips ?? []}
         sessionStartedAt={session?.started_at ?? null}
-        webhookToken={secret?.tip_webhook_token ?? ""}
-        seChannelId={secret?.streamelements_channel_id ?? ""}
-        seConfigured={!!secret?.streamelements_jwt}
         appUrl={APP_URL}
         botStatus={sp.bot ?? null}
         botDetail={sp.detail ?? null}

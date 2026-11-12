@@ -59,8 +59,8 @@ pnpm simulate:chat --online   # stream.online → abre a sessão "nesta live"
 ### Testes
 
 ```bash
-pnpm test        # unitários (Vitest): fuzzy match, parser de comandos, templates, fila, CSV, Pix, assinatura EventSub
-pnpm test:db     # pgTAP: RPCs da fila, prioridade por gorjeta, limites, permissões/RLS, cooldown
+pnpm test        # unitários (Vitest): fuzzy match, parser de comandos, templates, fila, CSV, assinatura EventSub
+pnpm test:db     # pgTAP: RPCs da fila, limites, permissões/RLS, cooldown
 pnpm test:e2e    # Playwright: pedir → tocar → próxima, com 2 navegadores verificando o tempo real
 pnpm test:all    # lint + typecheck + tudo acima
 ```
@@ -140,19 +140,15 @@ Projetos Free são **pausados após ~7 dias sem atividade**. Este app mitiga iss
 
 **Músicas**: busca aproximada (ignora acentos/maiúsculas), colunas configuráveis, ordenação refletida na URL (`?order_by=lastPlayed&order_dir=asc`), filtro por atributo (inclui "Nova" e "Premium"), chips clicáveis, "última tocada" em tempo relativo localizado ("3,8 semanas", "2.1 months", "Nunca"), detalhes + favoritar. O dono adiciona/edita/exclui, importa CSV (`título,artista,tags,nova,premium`, cabeçalho em PT ou EN, `,` ou `;`), cria tags livremente, marca "Nova" (removida automaticamente ao tocar) e "Premium".
 
-**Fila**: tocando agora, lista com posição/solicitante/origem/nota/gorjeta/horário; para dono e moderadores: abrir/fechar, tocar, marcar como tocada/próxima, marcar como tocada, pular (não entra no histórico), remover, arrastar para reordenar, mover para o topo, salvar para depois, confirmar gorjeta (dá prioridade), limpar. Regras configuráveis: limite por usuário, sem repetidas, cooldown por música, apenas inscritos/VIPs, apenas VIPs, pedidos pelo site, pedidos anônimos, prioridade por gorjeta.
+**Fila**: tocando agora, lista com posição/solicitante/origem/nota/horário; para dono e moderadores: abrir/fechar, tocar, marcar como tocada/próxima, marcar como tocada, pular (não entra no histórico), remover, arrastar para reordenar, mover para o topo, salvar para depois, limpar. Regras configuráveis: limite por usuário, sem repetidas, cooldown por música, apenas inscritos/VIPs, apenas VIPs, pedidos pelo site, pedidos anônimos.
 
 **Comandos de bot**: 15 comandos padrão (`!sr`, `!ws`, `!replace`, `!song`, `!next`, `!last`, `!today`, `!has`, `!lastPlayed`, `!sd`, `!fav`, `!unfav`, `!sl`, `!sq`, `!commands`) + personalizados. Respostas com templates estilo Handlebars: `{{song}}`, `{{user}}`, `{{position}}`, `{{queue_link}}`, `{{#if x}}…{{else}}…{{/if}}`, `{{#select now_playing 1}}…{{#empty}}…{{/select}}`. Cooldown global por comando. Mensagens internas (erro, ambiguidade) em EN ou PT conforme a configuração do canal.
 
-**Gorjetas** (sem servidor): confirmação manual na fila; chave Pix com código "copia e cola" (BR Code) gerado para o valor mínimo de prioridade; webhook genérico por canal (`/api/tips/webhook/{channelId}?token=…`) para automações; importação sob demanda da API REST do StreamElements. Se a mensagem da gorjeta citar uma música do repertório, ela é pedida com prioridade.
-
-**Painel `/dashboard`**: onboarding, sessão da live (automática via `stream.online/offline` ou manual), configurações da fila, bot, gorjetas, moderadores (por login da Twitch) e URL do overlay.
+**Painel `/dashboard`**: onboarding, sessão da live (automática via `stream.online/offline` ou manual), configurações da fila, bot, moderadores (por login da Twitch) e URL do overlay.
 
 ### Limitações conhecidas (por design, para caber no plano gratuito)
 
-- **StreamElements/Streamlabs em tempo real** usam sockets que exigiriam um processo sempre ligado. Aqui as gorjetas entram por importação sob demanda (StreamElements) ou pelo webhook genérico (Streamlabs/Ko-fi/etc. via automação).
-- **Pix** não tem confirmação automática sem um PSP pago; o streamer confirma na fila.
-- **"Apenas inscritos" pelo site**: o site não tem como verificar inscrição sem guardar tokens; nesse modo, só pedidos pelo chat (que trazem os badges) passam. Músicas premium também podem ser liberadas por gorjeta.
+- **"Apenas inscritos" pelo site**: o site não tem como verificar inscrição sem guardar tokens; nesse modo, só pedidos pelo chat (que trazem os badges) passam.
 
 ---
 
@@ -167,9 +163,9 @@ src/
   app/t/[slug]/…          páginas públicas do canal
   app/dashboard           painel do streamer
   app/overlay/[slug]      overlay OBS
-  app/api/…               pedidos pelo site, EventSub, OAuth do bot, gorjetas, keepalive
+  app/api/…               pedidos pelo site, EventSub, OAuth do bot, keepalive
   components/channel-live.tsx   provider de tempo real (Supabase Realtime)
-  lib/fuzzy.ts  lib/template.ts  lib/commands.ts  lib/queue.ts  lib/relative-time.ts  lib/csv.ts  lib/pix.ts
+  lib/fuzzy.ts  lib/template.ts  lib/commands.ts  lib/queue.ts  lib/relative-time.ts  lib/csv.ts
   lib/twitch/{signature,helix,bot}.ts
 scripts/simulate-chat.ts
 tests/unit  tests/e2e

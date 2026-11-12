@@ -1,24 +1,19 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Bot, CheckCircle2, Circle, Copy, MonitorPlay, Radio, RefreshCw, Settings, Shield, Trash2, Wallet } from "lucide-react";
-import { useLocale, useT } from "@/lib/i18n/client";
+import { Bot, CheckCircle2, Circle, Copy, MonitorPlay, Radio, Settings, Shield, Trash2 } from "lucide-react";
+import { useT } from "@/lib/i18n/client";
 import { Badge, Button, Card, CardHeader, Checkbox, Field, Input, Select, buttonClass } from "@/components/ui";
 import { useToast } from "@/components/toast";
 import { supabaseBrowser } from "@/lib/supabase/client";
-import { channelSettings, type Channel, type ChannelSettings, type ChannelStats, type Tip } from "@/lib/types";
-import { formatMoney } from "@/lib/format";
+import { channelSettings, type Channel, type ChannelSettings, type ChannelStats } from "@/lib/types";
 import { LocalTime } from "@/components/local-time";
 
 interface Props {
   channel: Channel;
   stats: ChannelStats;
   moderators: { id: string; twitch_login: string }[];
-  tips: Tip[];
   sessionStartedAt: string | null;
-  webhookToken: string;
-  seChannelId: string;
-  seConfigured: boolean;
   appUrl: string;
   botStatus: string | null;
   botDetail: string | null;
@@ -91,11 +86,8 @@ export function DashboardView(props: Props) {
       <BotSection {...props} />
       <SettingsSection channel={channel} />
       <div className="grid gap-6 lg:grid-cols-2">
-        <TipsSection {...props} />
-        <div className="space-y-6">
-          <ModeratorsSection channel={channel} initial={props.moderators} />
-          <OverlaySection url={`${props.appUrl}/overlay/${channel.slug}`} />
-        </div>
+        <ModeratorsSection channel={channel} initial={props.moderators} />
+        <OverlaySection url={`${props.appUrl}/overlay/${channel.slug}`} />
       </div>
       <p className="text-xs text-muted">{t("dashboard.keepAlive")}</p>
     </main>
@@ -186,8 +178,6 @@ function SettingsSection({ channel }: { channel: Channel }) {
         <div className="space-y-3">
           <Field label={t("dashboard.maxRequestsPerUser")}><Input {...num("maxRequestsPerUser")} step={1} /></Field>
           <Field label={t("dashboard.songCooldownHours")}><Input {...num("songCooldownHours")} /></Field>
-          <Field label={t("dashboard.minTipForPriority")}><Input {...num("minTipForPriority")} /></Field>
-          <Field label={t("dashboard.premiumMinTip")}><Input {...num("premiumMinTip")} /></Field>
           <Field label={t("dashboard.botLanguage")}>
             <Select value={s.botLanguage} onChange={(e) => setS({ ...s, botLanguage: e.target.value as "en" | "pt" })}>
               <option value="en">English</option>
@@ -201,89 +191,11 @@ function SettingsSection({ channel }: { channel: Channel }) {
           <Checkbox label={t("dashboard.vipsOnly")} {...bool("vipsOnly")} />
           <Checkbox label={t("dashboard.allowSiteRequests")} {...bool("allowSiteRequests")} />
           <Checkbox label={t("dashboard.allowAnonymous")} {...bool("allowAnonymous")} />
-          <Checkbox label={t("dashboard.tipPriority")} {...bool("tipPriority")} />
-          <hr className="border-border" />
-          <Field label={t("dashboard.currency")}>
-            <Select value={s.currency} onChange={(e) => setS({ ...s, currency: e.target.value })}>
-              {["BRL", "USD", "EUR"].map((c) => <option key={c}>{c}</option>)}
-            </Select>
-          </Field>
-          <Field label={t("dashboard.pixKey")}><Input value={s.pixKey} onChange={(e) => setS({ ...s, pixKey: e.target.value })} /></Field>
-          <div className="grid grid-cols-2 gap-2">
-            <Field label={t("dashboard.pixName")}><Input value={s.pixName} onChange={(e) => setS({ ...s, pixName: e.target.value })} /></Field>
-            <Field label={t("dashboard.pixCity")}><Input value={s.pixCity} onChange={(e) => setS({ ...s, pixCity: e.target.value })} /></Field>
-          </div>
         </div>
         <div className="md:col-span-2">
           <Button type="submit" variant="primary" disabled={busy}>{t("common.save")}</Button>
         </div>
       </form>
-    </Card>
-  );
-}
-
-function TipsSection({ channel, tips, webhookToken, seChannelId, seConfigured, appUrl }: Props) {
-  const t = useT();
-  const locale = useLocale();
-  const toast = useToast();
-  const router = useRouter();
-  const [token, setToken] = useState(webhookToken);
-  const [se, setSe] = useState({ id: seChannelId, jwt: "" });
-
-  const saveSecrets = async (body: Record<string, unknown>) => {
-    const res = await fetch("/api/dashboard/secrets", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
-    const data = (await res.json()) as { ok: boolean; tip_webhook_token?: string };
-    if (!data.ok) return toast(t("common.error"), "error");
-    if (data.tip_webhook_token) setToken(data.tip_webhook_token);
-    toast(t("common.saved"), "success");
-  };
-  const syncSE = async () => {
-    const res = await fetch("/api/tips/streamelements", { method: "POST" });
-    const data = (await res.json()) as { ok: boolean; count?: number; error?: string };
-    if (!data.ok) return toast(data.error ?? t("common.error"), "error");
-    toast(t("dashboard.seSynced", { count: data.count ?? 0 }), "success");
-    router.refresh();
-  };
-  const currency = channelSettings(channel).currency;
-
-  return (
-    <Card>
-      <CardHeader title={<span className="flex items-center gap-2"><Wallet className="size-4" /> {t("dashboard.tips")}</span>} />
-      <div className="space-y-5 p-4 text-sm">
-        <div>
-          <Field label={t("dashboard.tipWebhook")} hint={t("dashboard.tipWebhookHelp")}>
-            <CopyField value={`${appUrl}/api/tips/webhook/${channel.id}?token=${token}`} />
-          </Field>
-          <Button size="sm" variant="ghost" className="mt-1" onClick={() => saveSecrets({ regenerateWebhookToken: true })}>
-            <RefreshCw className="size-3.5" /> token
-          </Button>
-        </div>
-        <div className="space-y-2">
-          <div className="font-medium">{t("dashboard.seSync")}</div>
-          <Field label={t("dashboard.seChannelId")}><Input value={se.id} onChange={(e) => setSe({ ...se, id: e.target.value })} /></Field>
-          <Field label={t("dashboard.seJwt")}><Input type="password" placeholder={seConfigured ? "••••••••" : ""} value={se.jwt} onChange={(e) => setSe({ ...se, jwt: e.target.value })} /></Field>
-          <div className="flex gap-2">
-            <Button size="sm" onClick={() => saveSecrets({ streamelementsChannelId: se.id, streamelementsJwt: se.jwt || undefined })}>{t("common.save")}</Button>
-            <Button size="sm" variant="primary" onClick={syncSE}>{t("dashboard.seSyncNow")}</Button>
-          </div>
-        </div>
-        <div>
-          <div className="mb-2 font-medium">{t("dashboard.recentTips")}</div>
-          {tips.length === 0 ? (
-            <p className="text-muted">{t("dashboard.noTips")}</p>
-          ) : (
-            <ul className="divide-y divide-border">
-              {tips.map((tip) => (
-                <li key={tip.id} className="flex items-center gap-2 py-1.5">
-                  <span className="flex-1 truncate">{tip.donor_name}{tip.message ? <span className="text-muted"> — {tip.message}</span> : null}</span>
-                  <Badge tone="warning">{formatMoney(Number(tip.amount), tip.currency || currency, locale)}</Badge>
-                  <span className="text-xs text-muted">{tip.provider}</span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      </div>
     </Card>
   );
 }

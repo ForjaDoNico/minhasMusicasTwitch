@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import { csvToSongs, parseCsv } from "@/lib/csv";
-import { crc16, pixPayload } from "@/lib/pix";
 import { isFreshTimestamp, signEventSub, verifyEventSubSignature } from "@/lib/twitch/signature";
 
 describe("csv", () => {
@@ -17,19 +16,6 @@ describe("csv", () => {
   });
   it("works without header", () => {
     expect(csvToSongs("Creep,Radiohead").songs[0]).toMatchObject({ title: "Creep", artist: "Radiohead" });
-  });
-});
-
-describe("pix", () => {
-  it("crc16-ccitt matches the reference value", () => {
-    expect(crc16("123456789")).toBe("29B1");
-  });
-  it("builds a payload ending in a valid CRC", () => {
-    const p = pixPayload({ key: "streamer@example.com", name: "João Streamer", city: "São Paulo", amount: 10 });
-    expect(p.startsWith("000201")).toBe(true);
-    expect(p).toContain("5405" + "10.00");
-    expect(p).toContain("5913Joao Streamer");
-    expect(p.slice(-4)).toBe(crc16(p.slice(0, -4)));
   });
 });
 

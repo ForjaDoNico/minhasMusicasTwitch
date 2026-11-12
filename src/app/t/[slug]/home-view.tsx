@@ -3,17 +3,15 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Bot, Crown, History, ListMusic, Music, Save, GraduationCap } from "lucide-react";
 import { useChannelLive } from "@/components/channel-live";
-import { useLocale, useT } from "@/lib/i18n/client";
+import { useT } from "@/lib/i18n/client";
 import { Badge, Card, CardHeader } from "@/components/ui";
 import { supabaseBrowser } from "@/lib/supabase/client";
-import { formatMoney } from "@/lib/format";
 import type { ChannelStats } from "@/lib/types";
 import { QueueControlsCompact } from "./queue/queue-controls";
 
 export function HomeView({ initialStats }: { initialStats: ChannelStats }) {
-  const { channel, nowPlaying, queue, version, settings, isManager } = useChannelLive();
+  const { channel, nowPlaying, queue, version, isManager } = useChannelLive();
   const t = useT();
-  const locale = useLocale();
   const [stats, setStats] = useState(initialStats);
   const base = `/t/${channel.slug}`;
 
@@ -73,14 +71,9 @@ export function HomeView({ initialStats }: { initialStats: ChannelStats }) {
 
       <div>
         {!stats.live && <p className="mb-2 text-xs text-muted">{t("home.notLive")}</p>}
-        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
           <Metric label={t("home.playedThisStream")} value={stats.played_session} testId="metric-played" />
           <Metric label={t("home.requestsThisStream")} value={stats.requests_session} testId="metric-requests" />
-          <Metric
-            label={t("home.tipsThisStream")}
-            value={formatMoney(Number(stats.tips_session_amount), settings.currency, locale)}
-            sub={t("home.tipsDonors", { count: stats.tips_session_donors })}
-          />
           <Metric label={t("home.totalRequests")} value={stats.requests_total} />
         </div>
       </div>
