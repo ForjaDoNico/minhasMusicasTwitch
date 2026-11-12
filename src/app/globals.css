@@ -1,26 +1,69 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #f6f6f8;
+  --surface: #ffffff;
+  --surface-2: #f0eff4;
+  --border: #e2e0ea;
+  --fg: #18171c;
+  --muted: #6b6878;
+  --accent: #7c3aed;
+  --accent-fg: #ffffff;
+  --success: #15803d;
+  --danger: #dc2626;
+  --warning: #b45309;
+}
+
+.dark {
+  --bg: #0e0e10;
+  --surface: #18181b;
+  --surface-2: #1f1f23;
+  --border: #2e2e35;
+  --fg: #efeff1;
+  --muted: #a1a1aa;
+  --accent: #9147ff;
+  --accent-fg: #ffffff;
+  --success: #22c55e;
+  --danger: #f87171;
+  --warning: #fbbf24;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-fg);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
+  --color-warning: var(--warning);
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  color-scheme: light;
+}
+html.dark {
+  color-scheme: dark;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+/* OBS overlay: fully transparent page */
+html.overlay,
+html.overlay body {
+  background: transparent !important;
+}
+
+dialog::backdrop {
+  background: rgb(0 0 0 / 0.55);
 }

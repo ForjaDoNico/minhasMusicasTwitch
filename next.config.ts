@@ -1,9 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
-  cacheComponents: true,
-  partialPrefetching: true,
+  // Everything here is per-request / realtime, so we use the classic dynamic model.
   turbopack: {
     rules: {
       "*.css": {
@@ -11,6 +9,10 @@ const nextConfig: NextConfig = {
         as: "*.css",
       },
     },
+  },
+  devIndicators: { position: "top-right" },
+  images: {
+    remotePatterns: [{ protocol: "https", hostname: "static-cdn.jtvnw.net" }],
   },
 };
 
