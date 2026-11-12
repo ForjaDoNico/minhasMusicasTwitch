@@ -12,9 +12,8 @@ export const getChannelBySlug = cache(async (slug: string) => {
 
 /** Channel + viewer roles for a public page. 404 when the channel does not exist. */
 export const loadChannelContext = cache(async (slug: string) => {
-  const channel = await getChannelBySlug(slug);
+  const [channel, viewer] = await Promise.all([getChannelBySlug(slug), getViewer()]);
   if (!channel) notFound();
-  const viewer = await getViewer();
   const supabase = await supabaseServer();
   let isManager = false;
   const isOwner = !!viewer && viewer.id === channel.owner_id;

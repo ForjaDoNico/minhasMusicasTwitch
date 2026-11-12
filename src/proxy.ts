@@ -41,7 +41,9 @@ export async function proxy(request: NextRequest) {
       },
     },
   );
-  await supabase.auth.getUser();
+  // getClaims verifica o JWT localmente (chaves assimétricas) e só renova a sessão quando precisa,
+  // evitando uma ida ao servidor de Auth a cada clique.
+  await supabase.auth.getClaims();
   return response;
 }
 
