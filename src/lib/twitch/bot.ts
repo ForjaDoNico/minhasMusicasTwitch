@@ -44,7 +44,7 @@ export async function handleChatMessage(event: ChatMessageEvent): Promise<string
     if (!allowed) return null;
   }
 
-  const reply = await runAction(channel, command.action, command.response_template, parsed.args, event).catch((e) => {
+  const reply = await runAction(channel, command.action, command.response_template, parsed.args, event, command.command).catch((e) => {
     console.error("bot action failed", e);
     return botMessage(channelSettings(channel).botLanguage as BotLang, "generic_error");
   });
@@ -58,6 +58,7 @@ async function runAction(
   template: string,
   args: string,
   event: ChatMessageEvent,
+  commandName: string,
 ): Promise<string | null> {
   const admin = supabaseAdmin();
   const settings = channelSettings(channel);
@@ -118,7 +119,7 @@ async function runAction(
     case "REQUEST":
     case "REPLACE_LAST": {
       const { query, note } = splitNote(args);
-      if (!query) return msg("usage_sr");
+      if (!query) return msg("usage_sr", { cmd: commandName });
       const resolved = await resolveSong(query);
       if ("reply" in resolved) return resolved.reply;
       let replaceId: string | undefined;
@@ -176,7 +177,7 @@ async function runAction(
     }
     case "HAS_SONG":
     case "LAST_PLAYED": {
-      if (!args) return msg("usage_sr");
+      if (!args) return msg("usage_sr", { cmd: commandName });
       const best = rankSongs(args, await loadSongs(), 1)[0];
       const song = best && best.score >= 0.6 ? best.item : null;
       return render(song

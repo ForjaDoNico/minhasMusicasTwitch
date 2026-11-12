@@ -48,11 +48,11 @@ O script assina o payload como a Twitch faria e envia para o webhook local. Com 
 
 ```bash
 pnpm simulate:chat --verify                             # handshake webhook_callback_verification
-pnpm simulate:chat "!sr wonderwal | pra minha mãe" --user Alice
-pnpm simulate:chat "!sr beatles" --user Bob             # ambíguo → 3 opções
-pnpm simulate:chat "!sr bohemian rhapsody"              # não encontrado → sugere a lista de aprendizado
-pnpm simulate:chat "!sr asa branca" --badges subscriber,vip
-pnpm simulate:chat "!song" ; pnpm simulate:chat "!next" ; pnpm simulate:chat "!ws"
+pnpm simulate:chat "!pedir wonderwal | pra minha mãe" --user Alice
+pnpm simulate:chat "!pedir beatles" --user Bob             # ambíguo → 3 opções
+pnpm simulate:chat "!pedir bohemian rhapsody"              # não encontrado → sugere a lista de aprendizado
+pnpm simulate:chat "!pedir asa branca" --badges subscriber,vip
+pnpm simulate:chat "!tocando" ; pnpm simulate:chat "!next" ; pnpm simulate:chat "!errei"
 pnpm simulate:chat --online   # stream.online → abre a sessão "nesta live"
 ```
 
@@ -142,7 +142,7 @@ Projetos Free são **pausados após ~7 dias sem atividade**. Este app mitiga iss
 
 **Fila**: tocando agora, lista com posição/solicitante/origem/nota/horário; para dono e moderadores: abrir/fechar, tocar, marcar como tocada/próxima, marcar como tocada, pular (não entra no histórico), remover, arrastar para reordenar, mover para o topo, salvar para depois, limpar. Regras configuráveis: limite por usuário, sem repetidas, cooldown por música, apenas inscritos/VIPs, apenas VIPs, pedidos pelo site, pedidos anônimos.
 
-**Comandos de bot**: 15 comandos padrão (`!sr`, `!ws`, `!replace`, `!song`, `!next`, `!last`, `!today`, `!has`, `!lastPlayed`, `!sd`, `!fav`, `!unfav`, `!sl`, `!sq`, `!commands`) + personalizados. Respostas com templates estilo Handlebars: `{{song}}`, `{{user}}`, `{{position}}`, `{{queue_link}}`, `{{#if x}}…{{else}}…{{/if}}`, `{{#select now_playing 1}}…{{#empty}}…{{/select}}`. Cooldown global por comando. Mensagens internas (erro, ambiguidade) em EN ou PT conforme a configuração do canal.
+**Comandos de bot**: 15 comandos padrão (`!pedir`, `!errei`, `!replace`, `!tocando`, `!next`, `!last`, `!today`, `!has`, `!lastPlayed`, `!sd`, `!fav`, `!unfav`, `!sl`, `!fila`, `!comandos`; os que colidiriam com StreamElements/Streamlabs/Nightbot — `!sr`, `!song`, `!wrongsong`, `!queue`, `!commands` — têm nomes em PT) + personalizados. Respostas com templates estilo Handlebars: `{{song}}`, `{{user}}`, `{{position}}`, `{{queue_link}}`, `{{#if x}}…{{else}}…{{/if}}`, `{{#select now_playing 1}}…{{#empty}}…{{/select}}`. Cooldown global por comando. Mensagens internas (erro, ambiguidade) em EN ou PT conforme a configuração do canal.
 
 **Painel `/dashboard`**: onboarding, sessão da live (automática via `stream.online/offline` ou manual), configurações da fila, bot, moderadores (por login da Twitch) e URL do overlay.
 

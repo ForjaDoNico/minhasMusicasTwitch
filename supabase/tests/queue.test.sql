@@ -82,8 +82,8 @@ select is((select position from queue_items q where q.id = (select (v ->> 0)::uu
           (select count(*)::int from queue_items where status = 'QUEUED'), 'restored item goes to the end');
 
 -- cooldown
-select is(use_command_cooldown((select id from bot_commands where channel_id = 'c0000000-0000-0000-0000-000000000001' and command = 'song')), true, 'command usable first time');
-select is(use_command_cooldown((select id from bot_commands where channel_id = 'c0000000-0000-0000-0000-000000000001' and command = 'song')), false, 'command on cooldown right after');
+select is(use_command_cooldown((select id from bot_commands where channel_id = 'c0000000-0000-0000-0000-000000000001' and command = 'tocando')), true, 'command usable first time');
+select is(use_command_cooldown((select id from bot_commands where channel_id = 'c0000000-0000-0000-0000-000000000001' and command = 'tocando')), false, 'command on cooldown right after');
 
 select * from finish();
 rollback;

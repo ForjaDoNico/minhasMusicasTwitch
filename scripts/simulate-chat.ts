@@ -1,7 +1,7 @@
 /**
  * Send a signed, fake Twitch EventSub `channel.chat.message` to the local webhook.
  *
- *   pnpm simulate:chat "!sr wonderwall" [--user alice] [--badges subscriber,vip] [--broadcaster 100000001]
+ *   pnpm simulate:chat "!pedir wonderwall" [--user alice] [--badges subscriber,vip] [--broadcaster 100000001]
  *   pnpm simulate:chat --verify          # webhook_callback_verification handshake
  *   pnpm simulate:chat --online|--offline
  *
@@ -40,7 +40,7 @@ if (has("verify")) {
   body = { subscription: subscription(t), event: { broadcaster_user_id: broadcaster, broadcaster_user_login: "demo" } };
 } else {
   if (!text) {
-    console.error('usage: pnpm simulate:chat "!sr wonderwall" [--user name] [--badges subscriber,vip,moderator]');
+    console.error('usage: pnpm simulate:chat "!pedir wonderwall" [--user name] [--badges subscriber,vip,moderator]');
     process.exit(1);
   }
   body = {

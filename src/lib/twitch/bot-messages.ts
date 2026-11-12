@@ -3,7 +3,7 @@ export type BotLang = "en" | "pt";
 
 const messages = {
   en: {
-    usage_sr: "Usage: !sr <song or artist> (| optional note)",
+    usage_sr: "Usage: !{cmd} <song or artist>",
     not_found: '"{query}" is not in the songlist. Suggest it for the learning list: {learning_link}',
     ambiguous: "Which one? {options}",
     queue_closed: "The queue is closed right now.",
@@ -18,7 +18,7 @@ const messages = {
     generic_error: "Sorry, something went wrong.",
   },
   pt: {
-    usage_sr: "Uso: !sr <música ou artista> (| recado opcional)",
+    usage_sr: "Uso: !{cmd} <música ou artista>",
     not_found: '"{query}" não está no repertório. Sugira na lista de aprendizado: {learning_link}',
     ambiguous: "Qual delas? {options}",
     queue_closed: "A fila está fechada agora.",

@@ -6,24 +6,24 @@ export default async function HelpPage() {
   const pt = locale === "pt-BR";
   const rows: [string, string][] = pt
     ? [
-        ["!sr <música> | recado", "Pede uma música (busca aproximada por título/artista, ignora acentos)."],
-        ["!ws", "Remove seu último pedido."],
+        ["!pedir <música> | recado", "Pede uma música (busca aproximada por título/artista, ignora acentos)."],
+        ["!errei", "Remove seu último pedido."],
         ["!replace <música>", "Troca seu último pedido por outra música."],
-        ["!song · !next · !last", "Música atual, próxima e última tocada."],
+        ["!tocando · !next · !last", "Música atual, próxima e última tocada."],
         ["!today", "Quantas músicas tocaram nesta live."],
         ["!has <música> · !lastPlayed <música>", "Verifica se está no repertório / quando tocou pela última vez."],
         ["!fav · !unfav", "Favorita a música atual (ou a informada)."],
-        ["!sl · !sq · !commands", "Links do repertório, da fila e dos comandos."],
+        ["!sl · !fila · !comandos", "Links do repertório, da fila e dos comandos."],
       ]
     : [
-        ["!sr <song> | note", "Request a song (fuzzy title/artist search, accents ignored)."],
-        ["!ws", "Remove your last request."],
+        ["!pedir <song> | note", "Request a song (fuzzy title/artist search, accents ignored)."],
+        ["!errei", "Remove your last request."],
         ["!replace <song>", "Replace your last request."],
-        ["!song · !next · !last", "Current, next and last played song."],
+        ["!tocando · !next · !last", "Current, next and last played song."],
         ["!today", "How many songs were played this stream."],
         ["!has <song> · !lastPlayed <song>", "Is it in the songlist / when was it last played."],
         ["!fav · !unfav", "Favorite the current (or given) song."],
-        ["!sl · !sq · !commands", "Links to the songlist, queue and commands."],
+        ["!sl · !fila · !comandos", "Links to the songlist, queue and commands."],
       ];
   return (
     <>
